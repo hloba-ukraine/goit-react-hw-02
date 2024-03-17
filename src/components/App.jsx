@@ -1,21 +1,57 @@
-import Profile from "./Profile/Profile";
-import userData from "./Profile/userData.json";
-import FriendList from "./FriendList/FriendList";
-import friends from "./FriendList/friends.json";
-import TransactionHistory from "./TransactionHistory/TransactionHistory";
-import transactions from "./TransactionHistory/transaction.json";
+import { useEffect, useState } from "react";
+import Description from "./Description/Descriptions";
+import Options from "./Options/Options";
+import Feedback from "./Feedback/Feedback";
+import { object } from "prop-types";
+import css from "./App.module.css";
+const initialCountFeedback = {
+  good: 0,
+  neutral: 0,
+  bad: 0,
+};
+
 export default function App() {
+  const [feedbacks, setFeedback] = useState(() => {
+    const stringifiedFeedbacks = localStorage.getItem("feedbackValues");
+    const feedbackParse =
+      JSON.parse(stringifiedFeedbacks) ?? initialCountFeedback;
+    return feedbackParse;
+  });
+  const handleResetFeedback = () => {
+    setFeedback(initialCountFeedback);
+  };
+
+  const handleLogFeedback = (feedbackName) => {
+    setFeedback({ ...feedbacks, [feedbackName]: feedbacks[feedbackName] + 1 });
+  };
+
+  const feedbackTotal = Object.values(feedbacks).reduce(
+    (acc, curr) => acc + curr,
+    0
+  );
+  const positive =
+    feedbackTotal === 0
+      ? 0
+      : Math.round(
+          ((feedbacks.good + feedbacks.neutral) / feedbackTotal) * 100
+        );
+
+  useEffect(() => {
+    localStorage.setItem("feedbackValues", JSON.stringify(feedbacks));
+  }, [feedbacks]);
   return (
-    <div>
-      <Profile
-        name={userData.username}
-        tag={userData.tag}
-        location={userData.location}
-        image={userData.avatar}
-        stats={userData.stats}
+    <div className={css.box}>
+      <Description />
+      <Options
+        handleResetFeedback={handleResetFeedback}
+        handleLogFeedback={handleLogFeedback}
       />
-      <FriendList friends={friends} />
-      <TransactionHistory items={transactions} />
+      {}
+      <Feedback
+        feedbacks={feedbacks}
+        total={feedbackTotal}
+        positive={positive}
+      />
     </div>
   );
 }

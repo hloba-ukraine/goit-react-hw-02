@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import Description from "./Description/Descriptions";
 import Options from "./Options/Options";
 import Feedback from "./Feedback/Feedback";
-import { object } from "prop-types";
 import css from "./App.module.css";
+import Notification from "./Feedback/Notification";
 const initialCountFeedback = {
   good: 0,
   neutral: 0,
@@ -39,19 +39,24 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("feedbackValues", JSON.stringify(feedbacks));
   }, [feedbacks]);
+
   return (
     <div className={css.box}>
       <Description />
       <Options
         handleResetFeedback={handleResetFeedback}
         handleLogFeedback={handleLogFeedback}
-      />
-      {}
-      <Feedback
-        feedbacks={feedbacks}
         total={feedbackTotal}
-        positive={positive}
       />
+      {feedbackTotal === 0 ? (
+        <Notification />
+      ) : (
+        <Feedback
+          feedbacks={feedbacks}
+          total={feedbackTotal}
+          positive={positive}
+        />
+      )}
     </div>
   );
 }

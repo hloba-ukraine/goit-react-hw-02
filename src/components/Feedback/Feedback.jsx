@@ -1,7 +1,4 @@
 const Feedback = ({ feedbacks, total, positive }) => {
-  if (total === 0) {
-    return <p>Not feedback yet 🗑️</p>;
-  }
   return (
     <ul>
       <li>Good 🥰: {feedbacks.good}</li>
